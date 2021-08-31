@@ -1,10 +1,16 @@
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+LOGLEVEL = os.getenv('DJANGO_LOGLEVEL', 'debug').upper()
+DEBUG = True
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-SECRET_KEY = 'django-insecure-^6=6fs%q2ysudlr%!7=8!^l^c8s2_jn2&$2=lfguc*jlq3j=0&'
-
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -76,7 +82,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'es-ar'
+LANGUAGE_CODE = 'es-AR'
 
 TIME_ZONE = 'America/Buenos_Aires'
 
@@ -89,4 +95,30 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 ASGI_APPLICATION = "project.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
+SESSION_COOKIE_AGE = 30 * 60
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+SESSION_EXPIRE_SECONDS = 60 * 60  # Luego de 1 horas de inactividad desloguea al Usuario
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": 'redis://localhost:6379',
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "cache-siliq"
+    }
+}
